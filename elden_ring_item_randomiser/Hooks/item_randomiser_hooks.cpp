@@ -189,6 +189,10 @@ void ERRandomiserBase::RandomiseItemHook(uint64_t map_item_manager, ItemGiveStru
 		ItemInfo* item_struct = &item_info->item_info[i];
 		ItemInfo new_item_struct = ItemInfo();
 
+#if ITEM_DEBUG
+                wprintf_s(L"Randomising item 0x%08x\n", item_struct->item_id);
+#endif
+
 		// Generate new item
 		new_item_struct = *item_struct;
 
@@ -201,6 +205,16 @@ void ERRandomiserBase::RandomiseItemHook(uint64_t map_item_manager, ItemGiveStru
 
 	// Put the newly generated item in the player inventory
 	randomiser_base->item_give_function(map_item_manager, item_info, item_details);
+
+        // Give some useful starting items
+        if (item_count == 1 && item_info->item_info[0].item_id == 0x4000006A) {
+                // Spectral Steed Whistle
+                item_info->item_info[0].item_id = 0x40000082;
+                randomiser_base->item_give_function(map_item_manager, item_info, item_details);
+                // Lantern
+                item_info->item_info[0].item_id = 0x40000816;
+                randomiser_base->item_give_function(map_item_manager, item_info, item_details);
+        }
 
 	// Check and reset autoequip buffer
 	if (randomiser_base->auto_equip) {
